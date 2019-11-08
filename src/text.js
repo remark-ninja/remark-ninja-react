@@ -50,7 +50,7 @@ const textMap = {
 };
 
 const text = key => {
-  let lang = navigator ? navigator.language : 'en-US';
+  let lang = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
   if (lang !== 'zh-CN') {
     // Only support simplified Chinese and English for now.
     lang = 'en-US';
