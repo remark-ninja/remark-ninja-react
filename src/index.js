@@ -179,7 +179,7 @@ const Comments = ({ siteId, threadSlug, pageSize }) => {
         {error !== undefined && <div className="rn-error">{error}</div>}
         <ul className="rn-comment-list">
           {comments.map(c => (
-            <li key={c.id}>
+            <li key={c.id} id={`rn-comment-${c.id}`}>
               <Comment
                 authorName={c.authorName}
                 gravatarHash={c.gravatarHash}
