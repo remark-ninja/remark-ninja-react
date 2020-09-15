@@ -154,8 +154,13 @@ const Comments = ({ siteId, threadSlug, pageSize }) => {
   const limit = pageSize === undefined ? 20 : pageSize;
   const load = () => {
     loadComments({ siteId, threadSlug, start, limit })
-      .then(setComments)
-      .catch(e => setError(e.message));
+      .then(cs => {
+        setComments(cs);
+        setError(undefined);
+      })
+      .catch(e => {
+        setError(e.message);
+      });
   };
   const prevPage = () => {
     setStart(Math.max(start - limit, 0));
@@ -166,8 +171,10 @@ const Comments = ({ siteId, threadSlug, pageSize }) => {
 
   useEffect(load, [siteId, threadSlug, pageSize, start, limit]);
 
-  if (comments === undefined) {
+  if (comments === undefined && error === undefined) {
     return <div>{text('loading_comments')}</div>;
+  } else if (comments == undefined && error !== undefined) {
+    return <div className="rn-error">Failed to load comments: {error}</div>;
   } else {
     return (
       <div>
@@ -176,7 +183,7 @@ const Comments = ({ siteId, threadSlug, pageSize }) => {
           threadSlug={threadSlug}
           onNewComment={load}
         />
-        {error !== undefined && <div className="rn-error">{error}</div>}
+        {!!error && <div className="rn-error">{error}</div>}
         <ul className="rn-comment-list">
           {comments.map(c => (
             <li key={c.id} id={`rn-comment-${c.id}`}>
