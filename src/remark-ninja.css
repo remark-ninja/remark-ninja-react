@@ -33,6 +33,40 @@
   color: #888;
 }
 
+.rn-comment-actions {
+  font-size: 12px;
+  font-weight: light;
+}
+
+button {
+  cursor: pointer;
+}
+
+button.cancelReply {
+  border: none;
+  background: transparent;
+  color: rgb(29, 161, 242);
+  padding-left: 3px;
+}
+
+.rn-comment-actions button {
+  cursor: pointer;
+  color: rgb(29, 161, 242);
+  border: none;
+  background: transparent;
+  padding-top: 0;
+  padding-bottom: 0;
+  visibility: hidden;
+}
+
+a {
+  color: rgb(29, 161, 242);
+}
+
+.rn-comment-item:hover .rn-comment-actions button {
+  visibility: visible;
+}
+
 .rn-error {
   color: red;
   font-size: 14px;
@@ -56,7 +90,7 @@
   width: 100%;
 }
 
-.rn-comment-form input[type=submit] {
+.rn-comment-form input[type='submit'] {
   width: auto;
   padding: 6px 22px;
   border-radius: 8px;
@@ -66,19 +100,20 @@
   background-color: rgb(29, 161, 242);
   font-size: 16px;
   display: inline-block;
-  cursor:pointer;
+  cursor: pointer;
 }
 
-.rn-comment-form input[type=submit]:hover {
+.rn-comment-form input[type='submit']:hover {
   background-color: rgb(21, 126, 192);
 }
 
-.rn-comment-form input[type=submit]:disabled {
+.rn-comment-form input[type='submit']:disabled {
   background-color: #7d7f8d;
   cursor: wait;
 }
 
-.rn-author-name-box,.rn-author-email-box {
+.rn-author-name-box,
+.rn-author-email-box {
   width: 48%;
   margin: 0;
 }
@@ -104,7 +139,8 @@
 }
 
 @media (max-width: 700px) {
-  .rn-author-name-box,.rn-author-email-box {
+  .rn-author-name-box,
+  .rn-author-email-box {
     width: 100%;
   }
   .rn-author-box {

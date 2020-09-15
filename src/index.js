@@ -34,7 +34,14 @@ const loadComments = ({ siteId, threadSlug, start, limit }) => {
     .then(checkHttpStatus);
 };
 
-const postComment = ({ siteId, threadSlug, authorName, authorEmail, body }) => {
+const postComment = ({
+  siteId,
+  threadSlug,
+  authorName,
+  authorEmail,
+  body,
+  replyToComment
+}) => {
   threadSlug = threadSlug || location.pathname;
   return axios
     .post(`${rnUrlPrefix}/api/1/comments`, {
@@ -42,7 +49,8 @@ const postComment = ({ siteId, threadSlug, authorName, authorEmail, body }) => {
       threadSlug,
       authorName,
       authorEmail,
-      body
+      body,
+      replyToComment
     })
     .then(checkHttpStatus);
 };
@@ -55,14 +63,24 @@ const lsSet = (key, val) =>
 const lsAuthorNameKey = 'rnCommentAuthorName';
 const lsAuthorEmailKey = 'rnCommentAuthorEmail';
 
-// TODO: cache authorName and authorEmail in the client.
-const CommentForm = ({ siteId, threadSlug, onNewComment }) => {
+const scrollTo = hash => {
+  location.hash = `#${hash}`;
+};
+
+const CommentForm = ({ siteId, threadSlug, onNewComment, replyingTo }) => {
   const [authorName, setAuthorName] = useState(lsGet(lsAuthorNameKey) || '');
   const [authorEmail, setAuthorEmail] = useState(lsGet(lsAuthorEmailKey) || '');
   const [body, setBody] = useState('');
   const [error, setError] = useState(undefined);
   const [message, setMessage] = useState(undefined);
-
+  useEffect(() => {
+    if (replyingTo) {
+      const replyingToUser = replyingTo.authorName || 'Guest';
+      setBody(`@${replyingToUser} `);
+    } else {
+      setBody('');
+    }
+  }, [replyingTo]);
   const submit = e => {
     e.preventDefault();
     e.stopPropagation();
@@ -72,7 +90,14 @@ const CommentForm = ({ siteId, threadSlug, onNewComment }) => {
     lsSet(lsAuthorEmailKey, authorEmail);
     setError(undefined);
     setMessage(undefined);
-    postComment({ siteId, threadSlug, authorName, authorEmail, body })
+    postComment({
+      siteId,
+      threadSlug,
+      authorName,
+      authorEmail,
+      body,
+      replyToComment: replyingTo.id
+    })
       .then(() => {
         setMessage(text('submitted'));
         setBody('');
@@ -86,7 +111,7 @@ const CommentForm = ({ siteId, threadSlug, onNewComment }) => {
       });
   };
   return (
-    <form className="rn-comment-form">
+    <form className="rn-comment-form" id="rn-comment-form">
       {error !== undefined && <div className="rn-error">{error}</div>}
       <div className="rn-author-box">
         <div className="rn-author-name-box">
@@ -125,7 +150,7 @@ const CommentForm = ({ siteId, threadSlug, onNewComment }) => {
   );
 };
 
-const Comment = ({ authorName, gravatarHash, body, createdAt }) => {
+const Comment = ({ authorName, gravatarHash, body, createdAt, replyFn }) => {
   const date = new Date(createdAt);
   return (
     <div className="rn-comment-item">
@@ -137,7 +162,10 @@ const Comment = ({ authorName, gravatarHash, body, createdAt }) => {
       </div>
       <div className="rn-main-section">
         <div className="rn-author-name">{authorName || text('guest')}</div>
-        <div className="rn-date">{date.toLocaleDateString()}</div>
+        <div className="rn-comment-actions">
+          <span className="rn-date">{date.toLocaleDateString()}</span>
+          <button onClick={replyFn}>Reply</button>
+        </div>
         <div
           className="rn-comment-body"
           dangerouslySetInnerHTML={{ __html: body }}
@@ -151,6 +179,7 @@ const Comments = ({ siteId, threadSlug, pageSize }) => {
   const [comments, setComments] = useState(undefined);
   const [error, setError] = useState(undefined);
   const [start, setStart] = useState(0);
+  const [replyingTo, setReplyingTo] = useState(undefined);
   const limit = pageSize === undefined ? 20 : pageSize;
   const load = () => {
     loadComments({ siteId, threadSlug, start, limit })
@@ -178,10 +207,25 @@ const Comments = ({ siteId, threadSlug, pageSize }) => {
   } else {
     return (
       <div>
+        {!!replyingTo && (
+          <div>
+            Replying to{' '}
+            <a href={`#rn-comment-${replyingTo.id}`}>
+              {replyingTo.authorName || 'Guest'}
+            </a>{' '}
+            <button
+              className="cancelReply"
+              onClick={() => setReplyingTo(undefined)}
+            >
+              X
+            </button>
+          </div>
+        )}
         <CommentForm
           siteId={siteId}
           threadSlug={threadSlug}
           onNewComment={load}
+          replyingTo={replyingTo}
         />
         {!!error && <div className="rn-error">{error}</div>}
         <ul className="rn-comment-list">
@@ -192,6 +236,10 @@ const Comments = ({ siteId, threadSlug, pageSize }) => {
                 gravatarHash={c.gravatarHash}
                 body={c.bodyHTML}
                 createdAt={c.createdAt}
+                replyFn={() => {
+                  setReplyingTo(c);
+                  scrollTo('rn-comment-form');
+                }}
               />
             </li>
           ))}
