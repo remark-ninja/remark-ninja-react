@@ -1,6 +1,6 @@
 {
   "name": "remark-ninja-react",
-  "version": "2.3.8",
+  "version": "2.3.9",
   "description": "React component for Remark Ninja",
   "main": "lib/index.js",
   "module": "es/index.js",
