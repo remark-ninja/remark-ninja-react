@@ -51,20 +51,19 @@ button.cancelReply {
 
 .rn-comment-actions button {
   cursor: pointer;
-  color: rgb(29, 161, 242);
   border: none;
   background: transparent;
   padding-top: 0;
   padding-bottom: 0;
-  visibility: hidden;
+  color: #888;
+}
+
+.rn-comment-item:hover .rn-comment-actions button {
+  color: rgb(29, 161, 242);
 }
 
 a {
   color: rgb(29, 161, 242);
-}
-
-.rn-comment-item:hover .rn-comment-actions button {
-  visibility: visible;
 }
 
 .rn-error {
