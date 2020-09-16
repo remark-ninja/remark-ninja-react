@@ -186,6 +186,7 @@ const Comments = ({ siteId, threadSlug, pageSize }) => {
       .then(cs => {
         setComments(cs);
         setError(undefined);
+        setReplyingTo(undefined);
       })
       .catch(e => {
         setError(e.message);
