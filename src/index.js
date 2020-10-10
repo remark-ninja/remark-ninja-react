@@ -96,7 +96,7 @@ const CommentForm = ({ siteId, threadSlug, onNewComment, replyingTo }) => {
       authorName,
       authorEmail,
       body,
-      replyToComment: replyingTo.id
+      replyToComment: replyingTo ? replyingTo.id : undefined
     })
       .then(() => {
         setMessage(text('submitted'));
