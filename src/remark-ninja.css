@@ -156,3 +156,7 @@ a {
 .rn-promo-link a {
   color: rgb(29, 161, 242);
 }
+
+textarea {
+  resize: vertical;
+}
